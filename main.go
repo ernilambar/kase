@@ -3,6 +3,7 @@ package main
 import (
 	"encoding/json"
 	"fmt"
+	"io"
 	"os"
 	"strings"
 
@@ -12,7 +13,8 @@ import (
 const usage = `kase - convert string case
 
 Usage:
-  kase <command> <input>
+  kase <command> [<input>]
+  If <input> is omitted, read from stdin (e.g. cat file.txt | kase kebab).
 
 Commands:
   kebab   lowercase, hyphen-separated (hello-world)
@@ -64,37 +66,31 @@ func main() {
 	var allJSON bool
 	var raw bool
 	if cmd == "all" {
-		if len(os.Args) < 3 {
-			fmt.Fprint(os.Stderr, usage)
-			os.Exit(1)
-		}
-		for i := 2; i < len(os.Args)-1; i++ {
+		for i := 2; i < len(os.Args); i++ {
 			switch os.Args[i] {
 			case "--json":
 				allJSON = true
 			case "--raw":
 				raw = true
+			default:
+				input = os.Args[i]
 			}
 		}
-		input = os.Args[len(os.Args)-1]
-		if input == "--raw" || input == "--json" {
-			fmt.Fprint(os.Stderr, "kase: all requires an input string\n\n"+usage)
-			os.Exit(1)
+		// No non-flag arg: read from stdin
+		if input == "" {
+			input = readStdin()
 		}
 	} else {
-		if len(os.Args) < 3 {
-			fmt.Fprint(os.Stderr, usage)
-			os.Exit(1)
-		}
-		if os.Args[2] == "--raw" {
-			if len(os.Args) < 4 {
-				fmt.Fprint(os.Stderr, "kase: --raw requires an input string\n\n"+usage)
-				os.Exit(1)
-			}
+		if len(os.Args) >= 4 && os.Args[2] == "--raw" {
 			raw = true
 			input = os.Args[3]
-		} else {
+		} else if len(os.Args) >= 3 && os.Args[2] != "--raw" {
 			input = os.Args[2]
+		} else if len(os.Args) == 3 && os.Args[2] == "--raw" {
+			raw = true
+			input = readStdin()
+		} else {
+			input = readStdin()
 		}
 	}
 
@@ -162,4 +158,16 @@ func runAll(input string, jsonOutput bool, raw bool) {
 	fmt.Printf("camel  : %s\n", camel)
 	fmt.Printf("pascal : %s\n", pascal)
 	fmt.Printf("title  : %s\n", title)
+}
+
+// readStdin reads all of stdin and returns it as one string. Newlines are normalized to spaces.
+func readStdin() string {
+	data, err := io.ReadAll(os.Stdin)
+	if err != nil {
+		return ""
+	}
+	s := string(data)
+	s = strings.ReplaceAll(s, "\r\n", "\n")
+	s = strings.ReplaceAll(s, "\n", " ")
+	return strings.TrimSpace(s)
 }

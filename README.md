@@ -14,7 +14,8 @@ go install github.com/ernilambar/kase@latest
 ## Usage
 
 ```bash
-kase <command> <input>
+kase <command> [<input>]
+# Omit <input> to read from stdin:  cat file.txt | kase kebab
 kase kebab "Hello World"      # hello-world
 kase snake "Hello World"     # hello_world
 kase camel "hello world"     # helloWorld
