@@ -4,6 +4,12 @@ CLI for converting, detecting, and applying string case. Unix-friendly (pipe-saf
 
 ## Install
 
+**macOS (Homebrew):**
+```bash
+brew tap ernilambar/tap
+brew install ernilambar/tap/kase
+```
+
 **From source (requires Go):**
 ```bash
 go install github.com/ernilambar/kase@latest
