@@ -60,6 +60,11 @@ func main() {
 
 	cmd := arg1
 
+	if !validCommands[cmd] {
+		fmt.Fprintf(os.Stderr, "kase: unknown command %q\n\n%s", cmd, usage)
+		os.Exit(1)
+	}
+
 	// "all" accepts: kase all [--json] [--raw] <input>
 	// Other commands: kase <cmd> [--raw] <input>
 	var input string
@@ -92,11 +97,6 @@ func main() {
 		} else {
 			input = readStdin()
 		}
-	}
-
-	if !validCommands[cmd] {
-		fmt.Fprintf(os.Stderr, "kase: unknown command %q\n\n%s", cmd, usage)
-		os.Exit(1)
 	}
 
 	// Empty or whitespace-only input: print nothing, exit 0 (script-friendly)
