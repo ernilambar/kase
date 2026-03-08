@@ -12,7 +12,7 @@ import (
 )
 
 // Version is set at build time via -ldflags "-X main.Version=..."
-var Version = "0.1.0"
+var Version = "0.1.1"
 
 func main() {
 	app := &cli.App{
