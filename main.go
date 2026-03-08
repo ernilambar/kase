@@ -78,6 +78,9 @@ If input is omitted, read from stdin (e.g. cat file.txt | kase kebab).`,
 		},
 	}
 
+	cli.VersionPrinter = func(cCtx *cli.Context) {
+		fmt.Println(cCtx.App.Version)
+	}
 	if err := app.Run(os.Args); err != nil {
 		fmt.Fprintln(os.Stderr, err)
 		os.Exit(1)
